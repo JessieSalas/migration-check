@@ -223,7 +223,8 @@ def decision_summary(data):
     """One neutral paragraph generated from the numbers, at the top of every decision export.
 
     It claims "an output-format change, not a loss of task accuracy" only when new's accuracy
-    among on-list answers is at or above old's, or old's is inside the 95% interval of the difference.
+    among on-list answers is at or above old's. When it is lower but the 95% interval of the difference
+    includes zero, it says no loss was detected and names the largest loss the interval does not rule out.
     """
     spread = data.get("hazard_concentration")
     if not spread:
@@ -266,9 +267,12 @@ def decision_summary(data):
         if held and on_list["difference"] < 0:
             text += f"; the 95% interval of the difference, {interval_text(interval)}, includes zero"
         text += ")"
-        if held and gold["Dstar"] < 0:
+        if held and gold["Dstar"] < 0 and on_list["difference"] >= 0:
             text += (": the drop is an output-format change, not a loss of task accuracy on the answers that "
                      "follow the format.")
+        elif held and gold["Dstar"] < 0:
+            text += (": the drop is mostly an output-format change; no loss of task accuracy on the answers that "
+                     f"follow the format is detected, but a loss of up to {points(interval[0])} is not ruled out.")
         elif held:
             text += "."
         else:

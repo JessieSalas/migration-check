@@ -13,6 +13,8 @@ from migration_check.report import build_report, concentration_text, decision_su
 GOLD = pp.GOLD
 OFF_LIST = [label.upper() for label in GOLD]  # A case change: parses, but no allowed label is spelled that way.
 FORMAT = "the drop is an output-format change, not a loss of task accuracy on the answers that follow the format"
+UNDETECTED = ("the drop is mostly an output-format change; no loss of task accuracy on the answers that follow the "
+              "format is detected, but a loss of up to 49.3 points is not ruled out")
 AUTHORITATIVE = "Strict accuracy stays authoritative while the output contract is unchanged"
 
 
@@ -81,7 +83,7 @@ class DecisionSummaryTests(unittest.TestCase):
         summary = ("New loses 58.3 points of strict accuracy on gold (old 100.0%, new 41.7%). All answers parse; "
                    "6 of 12 use labels outside the allowed set, in 1 of 2 calls. Among on-list answers, accuracy "
                    "is 83.3% (old 100.0%; the 95% interval of the difference, -49.3 to +16.0 points, includes zero): " +
-                   FORMAT + ". " + AUTHORITATIVE)
+                   UNDETECTED + ". " + AUTHORITATIVE)
         lines = record.splitlines()
         self.assertEqual(lines[:2], ["# Migration decision record", ""])
         self.assertTrue(lines[2].startswith("Decision summary: " + summary), lines[2])
@@ -92,6 +94,13 @@ class DecisionSummaryTests(unittest.TestCase):
         decision = json.loads((self.root / "format.decision.json").read_text())
         self.assertTrue(decision["decision_summary"].startswith(summary))
         self.assert_browser_markdown_matches(self.root / "format.html")
+
+    def test_summary_says_format_not_capability_when_on_list_accuracy_is_at_or_above_old(self):
+        # New draw 0 entirely off-list, draw 1 all correct: on-list accuracy 100% against old 100%.
+        directory = self.off_list_run(list(GOLD), name="held")
+        summary = decision_summary(analyze(*load_run(directory)))
+        self.assertIn("Among on-list answers, accuracy is 100.0% (old 100.0%): " + FORMAT + ".", summary)
+        self.assertNotIn("not ruled out", summary)
 
     def test_summary_says_both_changed_when_on_list_accuracy_drops_beyond_the_interval(self):
         directory = self.off_list_run(GOLD[:3] + ["todo_list"] * 3, name="both")
@@ -119,7 +128,8 @@ class DecisionSummaryTests(unittest.TestCase):
         summary = decision_summary(analyze(*load_run(directory)))
         self.assertIn("6 of 12 answers parse; the 6 missing or unparseable are in 1 of 2 calls.", summary)
         self.assertIn("Among on-list answers, accuracy is 83.3% (old 100.0%; the 95% interval of the difference, "
-                      "-49.3 to +16.0 points, includes zero): " + FORMAT, summary)
+                      "-49.3 to +16.0 points, includes zero): " + UNDETECTED, summary)
+        self.assertNotIn(FORMAT, summary)
         self.assertTrue(summary.endswith(" 1 input queued for review (1 stable regression)."), summary)
         directory = self.demo_like(gold=False, name="nogold")
         summary = decision_summary(analyze(*load_run(directory)))
