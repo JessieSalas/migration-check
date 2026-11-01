@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "migration-check"
+version = "0.4.1"
+description = "Local repeat-draw model migration audits with no telemetry"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = []
+
+[project.scripts]
+migration-check = "migration_check.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["migration_check*"]
+
+[tool.setuptools.package-data]
+migration_check = ["report.html", "sample/*", "sample/banking77/*"]

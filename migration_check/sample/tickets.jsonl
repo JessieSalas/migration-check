@@ -1,0 +1,100 @@
+{"id": "sample-001", "input": "How do I stop my monthly subscription?", "gold": "cancel_subscription", "slice": "cancel_subscription"}
+{"id": "sample-002", "input": "is there a markup on currency conversion or is that a separate fee", "gold": "exchange_rate_question", "slice": "exchange_rate_question"}
+{"id": "sample-003", "input": "Good evening, I am travelling and my purse was taken at the market. I need my card cancelled and a replacement sent to my hotel if that is possible, thank you so much.", "gold": "card_lost_or_stolen", "slice": "card_lost_or_stolen"}
+{"id": "sample-004", "input": "Is the rate shown in the app the one I'll actually get when I convert?", "gold": "exchange_rate_question", "slice": "exchange_rate_question"}
+{"id": "sample-005", "input": "I'm done. Close it. Don't try to keep me with offers.", "gold": "close_account", "slice": "close_account"}
+{"id": "sample-006", "input": "The app keeps rejecting my new address, it says it can't be verified. It's a newly built street.", "gold": "change_address", "slice": "change_address"}
+{"id": "sample-007", "input": "I'm locked out and the password reset email never arrives. I've tried four times today.", "gold": "account_locked", "slice": "account_locked"}
+{"id": "sample-008", "input": "Why does the rate change between when I check it and when I buy?", "gold": "exchange_rate_question", "slice": "exchange_rate_question"}
+{"id": "sample-009", "input": "Hi, how long do international transfers normally take? I sent 300.00 on Thursday and my friend overseas still does not have it.", "gold": "transfer_not_received", "slice": "transfer_not_received"}
+{"id": "sample-010", "input": "cant log in. says account suspended??", "gold": "account_locked", "slice": "account_locked"}
+{"id": "sample-011", "input": "I don't think I should have paid an overdraft fee on the 14th, my salary was due that same day and you processed it late.", "gold": "fee_dispute", "slice": "fee_dispute"}
+{"id": "sample-012", "input": "Hello. I cannot find my card anywhere. It was in my coat pocket on Saturday. I have not seen any strange payments yet but I would like it blocked to be safe.", "gold": "card_lost_or_stolen", "slice": "card_lost_or_stolen"}
+{"id": "sample-013", "input": "card stolen, block it now", "gold": "card_lost_or_stolen", "slice": "card_lost_or_stolen"}
+{"id": "sample-014", "input": "Can you explain the card replacement fee? I didn't request a new card, it was replaced because of your system upgrade.", "gold": "fee_dispute", "slice": "fee_dispute"}
+{"id": "sample-015", "input": "can i dispute a purchase and get a refund", "gold": "refund_request", "slice": "refund_request"}
+{"id": "sample-016", "input": "I would like to dispute the 1.75 ATM fee from yesterday. Your website says the first three withdrawals each month are free and that was my first.", "gold": "fee_dispute", "slice": "fee_dispute"}
+{"id": "sample-017", "input": "my account is locked", "gold": "account_locked", "slice": "account_locked"}
+{"id": "sample-018", "input": "Hello, I made a transfer of 1,200.00 to my savings account at another bank on Monday. It left my balance but has not shown up on the other side. Can you trace it?", "gold": "transfer_not_received", "slice": "transfer_not_received"}
+{"id": "sample-019", "input": "hey card hasnt come yet, its been like 10 days, is that normal", "gold": "card_not_arrived", "slice": "card_not_arrived"}
+{"id": "sample-020", "input": "hello i want my money back from the airline, flight got cancelled on the 12th and they keep sending me to my bank", "gold": "refund_request", "slice": "refund_request"}
+{"id": "sample-021", "input": "Can you change my address to one abroad? I'm relocating for work for about two years.", "gold": "change_address", "slice": "change_address"}
+{"id": "sample-022", "input": "Hi, I think my wallet was stolen on the train this morning. Can you freeze my debit card straight away please?", "gold": "card_lost_or_stolen", "slice": "card_lost_or_stolen"}
+{"id": "sample-023", "input": "Please end my family plan, the kids have their own accounts elsewhere now.", "gold": "cancel_subscription", "slice": "cancel_subscription"}
+{"id": "sample-024", "input": "How do I get my money back for an order that never arrived from an online shop?", "gold": "refund_request", "slice": "refund_request"}
+{"id": "sample-025", "input": "Hi, I'm moving abroad for good and won't need this account. What's the process to close it?", "gold": "close_account", "slice": "close_account"}
+{"id": "sample-026", "input": "If I close my account will I lose access to my old statements? I'd like to close it but need records for taxes.", "gold": "close_account", "slice": "close_account"}
+{"id": "sample-027", "input": "Why has my account been frozen? My rent is due tomorrow and I can't pay it.", "gold": "account_locked", "slice": "account_locked"}
+{"id": "sample-028", "input": "Why was I charged a fee for withdrawing cash?", "gold": "fee_dispute", "slice": "fee_dispute"}
+{"id": "sample-029", "input": "Hello, I upgraded by accident while tapping around the app. Can you cancel the plus plan? I have not used any of its features.", "gold": "cancel_subscription", "slice": "cancel_subscription"}
+{"id": "sample-030", "input": "When I cancel the plan, do I keep the benefits until the end of the billing period?", "gold": "cancel_subscription", "slice": "cancel_subscription"}
+{"id": "sample-031", "input": "I sent 250.00 to my landlord on the 3rd and he says nothing arrived. If it is stuck somewhere can I just have it back?", "gold": "transfer_not_received", "slice": "transfer_not_received"}
+{"id": "sample-032", "input": "Hi, I bought a jacket online, sent it back within the return window, and the seller is ignoring me. Can you raise a refund for the 79.99 I paid?", "gold": "refund_request", "slice": "refund_request"}
+{"id": "sample-033", "input": "how much is 100 in euros today", "gold": "exchange_rate_question", "slice": "exchange_rate_question"}
+{"id": "sample-034", "input": "Can I close a joint account if the other person agrees by message?", "gold": "close_account", "slice": "close_account"}
+{"id": "sample-035", "input": "Hi, the app says my account has been restricted for security reasons. I haven't done anything unusual. How do I get access back?", "gold": "account_locked", "slice": "account_locked"}
+{"id": "sample-036", "input": "Requesting a refund for a purchase I made by mistake this morning, the seller already agreed to cancel it.", "gold": "refund_request", "slice": "refund_request"}
+{"id": "sample-037", "input": "Good afternoon. I would like to update my correspondence address but keep my registered address the same. Is that possible?", "gold": "change_address", "slice": "change_address"}
+{"id": "sample-038", "input": "I want to go back from the premium plan to the free account. I am not closing anything, I just do not want to pay.", "gold": "cancel_subscription", "slice": "cancel_subscription"}
+{"id": "sample-039", "input": "Someone in my building might have taken my new card out of the shared post room before I ever got it. Please block it before they use it.", "gold": "card_lost_or_stolen", "slice": "card_lost_or_stolen"}
+{"id": "sample-040", "input": "wheres my money, transfer ref ZZ-0001 not received", "gold": "transfer_not_received", "slice": "transfer_not_received"}
+{"id": "sample-041", "input": "How do I delete my account permanently?", "gold": "close_account", "slice": "close_account"}
+{"id": "sample-042", "input": "rates seem worse than last week, is that you or the market", "gold": "exchange_rate_question", "slice": "exchange_rate_question"}
+{"id": "sample-043", "input": "Hello, I've been charged a late payment fee even though I paid on time. Would appreciate it being reversed, thanks.", "gold": "fee_dispute", "slice": "fee_dispute"}
+{"id": "sample-044", "input": "Hi, I signed up for the travel insurance add-on last year and do not need it anymore. Please cancel it before the next renewal.", "gold": "cancel_subscription", "slice": "cancel_subscription"}
+{"id": "sample-045", "input": "i typed my address wrong when i signed up, flat number is missing, can u fix", "gold": "change_address", "slice": "change_address"}
+{"id": "sample-046", "input": "Hello, my partner and I have just moved in together and I need my statements to go to our new place. What documents do you need from me to update my address?", "gold": "change_address", "slice": "change_address"}
+{"id": "sample-047", "input": "The amount that left my account for the hotel abroad is bigger than what the hotel quoted me. Which rate did you use?", "gold": "exchange_rate_question", "slice": "exchange_rate_question"}
+{"id": "sample-048", "input": "where is my new card", "gold": "card_not_arrived", "slice": "card_not_arrived"}
+{"id": "sample-049", "input": "Hello, I got a new phone and now I cannot get into my account because the verification code goes to my old number, which I do not have anymore.", "gold": "account_locked", "slice": "account_locked"}
+{"id": "sample-050", "input": "close my account please", "gold": "close_account", "slice": "close_account"}
+{"id": "sample-051", "input": "Hi, I am going abroad next month. Do you use the market rate when I pay by card, and is it different at weekends?", "gold": "exchange_rate_question", "slice": "exchange_rate_question"}
+{"id": "sample-052", "input": "A shop told me they refunded 18.40 five days ago but it still is not in my account. Can you chase it?", "gold": "refund_request", "slice": "refund_request"}
+{"id": "sample-053", "input": "how to change postcode on account", "gold": "change_address", "slice": "change_address"}
+{"id": "sample-054", "input": "I was charged twice by the same restaurant for one meal. Please refund the second charge.", "gold": "refund_request", "slice": "refund_request"}
+{"id": "sample-055", "input": "I've moved, how do I update my address?", "gold": "change_address", "slice": "change_address"}
+{"id": "sample-056", "input": "Hello there, quick one. If I convert my balance to another currency now and back again later, is the same rate applied both ways?", "gold": "exchange_rate_question", "slice": "exchange_rate_question"}
+{"id": "sample-057", "input": "I'm so stressed. I moved the deposit for my new flat, 950.00, last night, and the agency says they have not received it and will give the flat to someone else if it does not arrive today. Please help, no idea what went wrong.", "gold": "transfer_not_received", "slice": "transfer_not_received"}
+{"id": "sample-058", "input": "new address, need to change it", "gold": "change_address", "slice": "change_address"}
+{"id": "sample-059", "input": "transfer still pending after 3 days??", "gold": "transfer_not_received", "slice": "transfer_not_received"}
+{"id": "sample-060", "input": "Hello, sorry to bother you. My daughter opened an account with you and her card never came. She is 17 and a bit worried about it. Can you resend it?", "gold": "card_not_arrived", "slice": "card_not_arrived"}
+{"id": "sample-061", "input": "the payment to my plumber didnt go through or something, he says he got nothing and it says completed on my side", "gold": "transfer_not_received", "slice": "transfer_not_received"}
+{"id": "sample-062", "input": "The replacement for the card I lost on holiday still has not turned up, twelve days now.", "gold": "card_not_arrived", "slice": "card_not_arrived"}
+{"id": "sample-063", "input": "Why was I charged 3.10 extra on a purchase in another currency? The rate you used looks wrong too.", "gold": "fee_dispute", "slice": "fee_dispute"}
+{"id": "sample-064", "input": "Sent money to my brother yesterday and he hasn't got it", "gold": "transfer_not_received", "slice": "transfer_not_received"}
+{"id": "sample-065", "input": "help me unlock my account please", "gold": "account_locked", "slice": "account_locked"}
+{"id": "sample-066", "input": "There is a 5.00 monthly account fee on my statement but I was told my account was free. Please remove it.", "gold": "fee_dispute", "slice": "fee_dispute"}
+{"id": "sample-067", "input": "I sent money to the wrong account number by mistake. Please get it back for me.", "gold": "refund_request", "slice": "refund_request"}
+{"id": "sample-068", "input": "unsubscribe me from the paid tier", "gold": "cancel_subscription", "slice": "cancel_subscription"}
+{"id": "sample-069", "input": "refund please, item was faulty", "gold": "refund_request", "slice": "refund_request"}
+{"id": "sample-070", "input": "End my membership and close my account with you entirely.", "gold": "close_account", "slice": "close_account"}
+{"id": "sample-071", "input": "Every time I try to log in it says verification failed and then locks me out for an hour.", "gold": "account_locked", "slice": "account_locked"}
+{"id": "sample-072", "input": "My employer says they paid my wages on the 25th but nothing has come in.", "gold": "transfer_not_received", "slice": "transfer_not_received"}
+{"id": "sample-073", "input": "cancel my premium plan", "gold": "cancel_subscription", "slice": "cancel_subscription"}
+{"id": "sample-074", "input": "Please update my home address. I can't find the option in settings.", "gold": "change_address", "slice": "change_address"}
+{"id": "sample-075", "input": "Good morning. I applied for my first card on the 2nd and the tracking page has said dispatched for over a week. Could you check where it is, please?", "gold": "card_not_arrived", "slice": "card_not_arrived"}
+{"id": "sample-076", "input": "You charged me the 9.99 monthly plan fee again even though I cancelled in September.", "gold": "fee_dispute", "slice": "fee_dispute"}
+{"id": "sample-077", "input": "I would like to close my account and transfer the remaining balance to my other bank.", "gold": "close_account", "slice": "close_account"}
+{"id": "sample-078", "input": "I left my card in a taxi last night and the driver has not answered. Please cancel it and send a new one.", "gold": "card_lost_or_stolen", "slice": "card_lost_or_stolen"}
+{"id": "sample-079", "input": "fees fees fees. every time i top up there is a charge nobody told me about", "gold": "fee_dispute", "slice": "fee_dispute"}
+{"id": "sample-080", "input": "lost my card help", "gold": "card_lost_or_stolen", "slice": "card_lost_or_stolen"}
+{"id": "sample-081", "input": "Cannot log in after too many attempts. I need to get back in so I can move my money out and close it.", "gold": "account_locked", "slice": "account_locked"}
+{"id": "sample-082", "input": "How long does a card usually take to arrive? Mine was ordered last Friday.", "gold": "card_not_arrived", "slice": "card_not_arrived"}
+{"id": "sample-083", "input": "I have been locked out for a week and honestly I just want to close the whole thing at this point.", "gold": "close_account", "slice": "close_account"}
+{"id": "sample-084", "input": "Hi, I'm moving house on the 1st. Can I change my address now or do I have to wait until I've moved in?", "gold": "change_address", "slice": "change_address"}
+{"id": "sample-085", "input": "I got locked out after typing the wrong passcode too many times.", "gold": "account_locked", "slice": "account_locked"}
+{"id": "sample-086", "input": "I run a small business and pay a supplier in yen every month. Can I lock in a rate in advance, or does it always use the rate on the day of payment?", "gold": "exchange_rate_question", "slice": "exchange_rate_question"}
+{"id": "sample-087", "input": "my card has not arrived", "gold": "card_not_arrived", "slice": "card_not_arrived"}
+{"id": "sample-088", "input": "I moved last month and my new card still has not come. I think it might have gone to my old flat.", "gold": "card_not_arrived", "slice": "card_not_arrived"}
+{"id": "sample-089", "input": "what is this 2.50 charge", "gold": "fee_dispute", "slice": "fee_dispute"}
+{"id": "sample-090", "input": "The concert I paid 45.00 for was cancelled. How do I get the money back onto my card?", "gold": "refund_request", "slice": "refund_request"}
+{"id": "sample-091", "input": "Can you check a transfer for me? It shows as sent but the recipient says no money has arrived.", "gold": "transfer_not_received", "slice": "transfer_not_received"}
+{"id": "sample-092", "input": "I don't want the metal plan anymore, please switch it off from next month.", "gold": "cancel_subscription", "slice": "cancel_subscription"}
+{"id": "sample-093", "input": "Is there a way to report a lost card in the app? I dropped mine somewhere between the gym and home.", "gold": "card_lost_or_stolen", "slice": "card_lost_or_stolen"}
+{"id": "sample-094", "input": "my bag got snatched outside a cafe, card was in it, what do i do", "gold": "card_lost_or_stolen", "slice": "card_lost_or_stolen"}
+{"id": "sample-095", "input": "stop the 4.99 a month thing", "gold": "cancel_subscription", "slice": "cancel_subscription"}
+{"id": "sample-096", "input": "Pls freeze my card, I misplaced it and theres a payment of 64.00 I dont recognise from today", "gold": "card_lost_or_stolen", "slice": "card_lost_or_stolen"}
+{"id": "sample-097", "input": "What exchange rate do you use?", "gold": "exchange_rate_question", "slice": "exchange_rate_question"}
+{"id": "sample-098", "input": "The tracking says my new card was delivered on Tuesday but it is not in my letterbox and none of my neighbours have it. What happens now?", "gold": "card_not_arrived", "slice": "card_not_arrived"}
+{"id": "sample-099", "input": "Ordered a card 2 weeks ago and still nothing in the post.", "gold": "card_not_arrived", "slice": "card_not_arrived"}
+{"id": "sample-100", "input": "please shut down my account, I don't use it", "gold": "close_account", "slice": "close_account"}

@@ -1,0 +1,10 @@
+card_lost_or_stolen
+card_not_arrived
+transfer_not_received
+refund_request
+fee_dispute
+change_address
+account_locked
+cancel_subscription
+exchange_rate_question
+close_account

@@ -1,0 +1,4 @@
+{"id":"ticket-1","input":"Please accept this request.","gold":"yes","slice":"requests"}
+{"id":"ticket-2","input":"Please decline this request.","gold":"no","slice":"requests"}
+{"id":"ticket-3","messages":[{"role":"user","content":"Is this approved?"}],"gold":"yes","slice":"questions"}
+{"id":"ticket-4","input":"Is this rejected?","gold":"no","slice":"questions"}

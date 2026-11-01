@@ -1,0 +1,35 @@
+{
+  "model": "stub-anthropic",
+  "content": [
+    {
+      "type": "text",
+      "text": "Checking this fictional order."
+    },
+    {
+      "type": "tool_use",
+      "id": "toolu_01Stub1",
+      "name": "order_status",
+      "input": {
+        "order_code": "PRIVATE_ARGUMENT"
+      }
+    },
+    {
+      "type": "tool_use",
+      "id": "toolu_01Stub2",
+      "name": "refund_request",
+      "input": {
+        "order_code": "DEMO",
+        "reason": 123
+      }
+    }
+  ],
+  "usage": {
+    "input_tokens": 20,
+    "output_tokens": 12
+  },
+  "id": "msg_01StubTools",
+  "type": "message",
+  "role": "assistant",
+  "stop_reason": "tool_use",
+  "stop_sequence": null
+}

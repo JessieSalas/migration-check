@@ -1,0 +1,7 @@
+Banking77 (tickets.jsonl and labels.txt in this directory)
+Casanueva, Temcinas, Gerz, Henderson and Vulic (2020), "Efficient Intent Detection with Dual Sentence Encoders", PolyAI.
+Source: https://github.com/PolyAI-LDN/task-specific-datasets and https://huggingface.co/datasets/PolyAI/banking77
+Licence: Creative Commons Attribution 4.0 International (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/
+Changes: 100 test-split utterances (10 for each of 10 intents) taken from a seeded 770-item sample, reordered with a
+fixed seed, and given ids b77-001 to b77-100; text and labels are otherwise unchanged. labels.txt lists all 77
+Banking77 intent labels. This data is not covered by the repository's MIT licence.

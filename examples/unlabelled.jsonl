@@ -1,0 +1,2 @@
+{"id":"ticket-1","input":"Please accept this request.","slice":"requests"}
+{"id":"ticket-2","messages":[{"role":"user","content":"Is this approved?"}],"slice":"questions"}

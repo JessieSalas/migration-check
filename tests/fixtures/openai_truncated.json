@@ -1,0 +1,33 @@
+{
+  "model": "stub-openai",
+  "choices": [
+    {
+      "message": {
+        "role": "assistant",
+        "content": null,
+        "refusal": null,
+        "tool_calls": [
+          {
+            "id": "call_partial",
+            "type": "function",
+            "function": {
+              "name": "refund_request",
+              "arguments": "{\"order_code\":"
+            }
+          }
+        ]
+      },
+      "index": 0,
+      "finish_reason": "length",
+      "logprobs": null
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 20,
+    "completion_tokens": 12,
+    "total_tokens": 32
+  },
+  "id": "chatcmpl-stubTools",
+  "object": "chat.completion",
+  "created": 1793534400
+}

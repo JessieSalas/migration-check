@@ -1,0 +1,100 @@
+{"id": "b77-001", "input": "How long will it take to get to me?", "gold": "card_delivery_estimate", "slice": "card_delivery_estimate"}
+{"id": "b77-002", "input": "Help! Someone stole my card!", "gold": "lost_or_stolen_card", "slice": "lost_or_stolen_card"}
+{"id": "b77-003", "input": "My transfer didn't work", "gold": "failed_transfer", "slice": "failed_transfer"}
+{"id": "b77-004", "input": "My transfer did not go through.", "gold": "failed_transfer", "slice": "failed_transfer"}
+{"id": "b77-005", "input": "I want to top my account by using a bank transfer. How would that work?", "gold": "transfer_into_account", "slice": "transfer_into_account"}
+{"id": "b77-006", "input": "Please stop my purchase.", "gold": "request_refund", "slice": "request_refund"}
+{"id": "b77-007", "input": "Do you accept other currencies besides US Dollars?", "gold": "supported_cards_and_currencies", "slice": "supported_cards_and_currencies"}
+{"id": "b77-008", "input": "When will I get my card?", "gold": "card_arrival", "slice": "card_arrival"}
+{"id": "b77-009", "input": "My card stopped working", "gold": "card_not_working", "slice": "card_not_working"}
+{"id": "b77-010", "input": "Which cards do you guys support? I want to top up using my credit card.", "gold": "supported_cards_and_currencies", "slice": "supported_cards_and_currencies"}
+{"id": "b77-011", "input": "Help me.  My card doesn't work.", "gold": "card_not_working", "slice": "card_not_working"}
+{"id": "b77-012", "input": "My card was declined today when eating and I need to know what's wrong.", "gold": "card_not_working", "slice": "card_not_working"}
+{"id": "b77-013", "input": "Can I use American Express to add money into my account?", "gold": "supported_cards_and_currencies", "slice": "supported_cards_and_currencies"}
+{"id": "b77-014", "input": "How long should my new card take to arrive?", "gold": "card_arrival", "slice": "card_arrival"}
+{"id": "b77-015", "input": "When can I expect to receive my new card?", "gold": "card_delivery_estimate", "slice": "card_delivery_estimate"}
+{"id": "b77-016", "input": "I ordered a card and I still haven't received it. It's been two weeks. What can I do?", "gold": "card_arrival", "slice": "card_arrival"}
+{"id": "b77-017", "input": "My card got stolen!", "gold": "lost_or_stolen_card", "slice": "lost_or_stolen_card"}
+{"id": "b77-018", "input": "I want to add money but don't know what currencies you accept, can you tell me?", "gold": "supported_cards_and_currencies", "slice": "supported_cards_and_currencies"}
+{"id": "b77-019", "input": "What are the steps to verify my identity?", "gold": "verify_my_identity", "slice": "verify_my_identity"}
+{"id": "b77-020", "input": "What do I need to do to get a refund?", "gold": "request_refund", "slice": "request_refund"}
+{"id": "b77-021", "input": "My card is lost! What do I do now?", "gold": "lost_or_stolen_card", "slice": "lost_or_stolen_card"}
+{"id": "b77-022", "input": "How do I report my card lost or stolen?", "gold": "lost_or_stolen_card", "slice": "lost_or_stolen_card"}
+{"id": "b77-023", "input": "I'm still waiting for delivery of my new card, why is it taking so long?", "gold": "card_arrival", "slice": "card_arrival"}
+{"id": "b77-024", "input": "I lost my card", "gold": "lost_or_stolen_card", "slice": "lost_or_stolen_card"}
+{"id": "b77-025", "input": "Tell me which cards and what currency is supported.", "gold": "supported_cards_and_currencies", "slice": "supported_cards_and_currencies"}
+{"id": "b77-026", "input": "Someone stole my wallet earlier today, not sure exactly when, probably on Piccadilly circus. Can you check if there were any attempts to use the card and obviously block it?", "gold": "lost_or_stolen_card", "slice": "lost_or_stolen_card"}
+{"id": "b77-027", "input": "which kind of documentation do I need for identity check?", "gold": "verify_my_identity", "slice": "verify_my_identity"}
+{"id": "b77-028", "input": "I would like to cancel a payment. I purchased something several days ago and i still have not received it.", "gold": "request_refund", "slice": "request_refund"}
+{"id": "b77-029", "input": "I need to verify my identity", "gold": "verify_my_identity", "slice": "verify_my_identity"}
+{"id": "b77-030", "input": "Which credit or debit cards can I use to top up?", "gold": "supported_cards_and_currencies", "slice": "supported_cards_and_currencies"}
+{"id": "b77-031", "input": "How can I top up my Google Pay?", "gold": "apple_pay_or_google_pay", "slice": "apple_pay_or_google_pay"}
+{"id": "b77-032", "input": "What can I use to verify my identify?", "gold": "verify_my_identity", "slice": "verify_my_identity"}
+{"id": "b77-033", "input": "What all am I required to show for the identity check?", "gold": "verify_my_identity", "slice": "verify_my_identity"}
+{"id": "b77-034", "input": "Help.  I have a stolen card!", "gold": "lost_or_stolen_card", "slice": "lost_or_stolen_card"}
+{"id": "b77-035", "input": "What do you need to verify my identity?", "gold": "verify_my_identity", "slice": "verify_my_identity"}
+{"id": "b77-036", "input": "Hello I changed my mind and really need a refund on one of things I bought recently. Can you please cancel the transaction and get my money back. Please it's urgent.", "gold": "request_refund", "slice": "request_refund"}
+{"id": "b77-037", "input": "How do I know when my card will arrive?", "gold": "card_arrival", "slice": "card_arrival"}
+{"id": "b77-038", "input": "Where do I verify my identity?", "gold": "verify_my_identity", "slice": "verify_my_identity"}
+{"id": "b77-039", "input": "Why hasn't my transfer been made?", "gold": "failed_transfer", "slice": "failed_transfer"}
+{"id": "b77-040", "input": "can you tell me why my transfer failed?", "gold": "failed_transfer", "slice": "failed_transfer"}
+{"id": "b77-041", "input": "How can I get my physical card to work?", "gold": "card_not_working", "slice": "card_not_working"}
+{"id": "b77-042", "input": "is apple pay eligible for top up", "gold": "apple_pay_or_google_pay", "slice": "apple_pay_or_google_pay"}
+{"id": "b77-043", "input": "My top-up for Google Pay isn't working", "gold": "apple_pay_or_google_pay", "slice": "apple_pay_or_google_pay"}
+{"id": "b77-044", "input": "My American express is experiencing a problem with apple play with top up, can you fix it?", "gold": "apple_pay_or_google_pay", "slice": "apple_pay_or_google_pay"}
+{"id": "b77-045", "input": "can I choose a date for delivery?", "gold": "card_delivery_estimate", "slice": "card_delivery_estimate"}
+{"id": "b77-046", "input": "Is my currency okay to add money with?", "gold": "supported_cards_and_currencies", "slice": "supported_cards_and_currencies"}
+{"id": "b77-047", "input": "I got a message that I need to verify my identity; what do I do?", "gold": "verify_my_identity", "slice": "verify_my_identity"}
+{"id": "b77-048", "input": "When are cards delivered?", "gold": "card_delivery_estimate", "slice": "card_delivery_estimate"}
+{"id": "b77-049", "input": "To add money to my account, what currencies can I use?", "gold": "supported_cards_and_currencies", "slice": "supported_cards_and_currencies"}
+{"id": "b77-050", "input": "What is the difference between standard and express delivery?", "gold": "card_delivery_estimate", "slice": "card_delivery_estimate"}
+{"id": "b77-051", "input": "dont understand why transfer failed", "gold": "failed_transfer", "slice": "failed_transfer"}
+{"id": "b77-052", "input": "I'm still waiting on my card to be delivered.", "gold": "card_arrival", "slice": "card_arrival"}
+{"id": "b77-053", "input": "How do I deal with a stolen card?", "gold": "lost_or_stolen_card", "slice": "lost_or_stolen_card"}
+{"id": "b77-054", "input": "Can you get me my card fast?", "gold": "card_delivery_estimate", "slice": "card_delivery_estimate"}
+{"id": "b77-055", "input": "I need support options, I want to top my card", "gold": "supported_cards_and_currencies", "slice": "supported_cards_and_currencies"}
+{"id": "b77-056", "input": "I can't top up my account using my American Express with Apple Pay.", "gold": "apple_pay_or_google_pay", "slice": "apple_pay_or_google_pay"}
+{"id": "b77-057", "input": "Why hasn't my card been delivered?", "gold": "card_arrival", "slice": "card_arrival"}
+{"id": "b77-058", "input": "I did not get my card yet, is it lost?", "gold": "card_arrival", "slice": "card_arrival"}
+{"id": "b77-059", "input": "I can't get my card to work.", "gold": "card_not_working", "slice": "card_not_working"}
+{"id": "b77-060", "input": "Can I use the system Google Pay for top-ups?", "gold": "apple_pay_or_google_pay", "slice": "apple_pay_or_google_pay"}
+{"id": "b77-061", "input": "What is accepted in regards to cards and currencies?", "gold": "supported_cards_and_currencies", "slice": "supported_cards_and_currencies"}
+{"id": "b77-062", "input": "I checked my account today and it said I was out of money. How do I transfer money into my account?", "gold": "transfer_into_account", "slice": "transfer_into_account"}
+{"id": "b77-063", "input": "I need it delivered by Saturday.", "gold": "card_delivery_estimate", "slice": "card_delivery_estimate"}
+{"id": "b77-064", "input": "Is a copy of the police report necessary for completing the report process?", "gold": "lost_or_stolen_card", "slice": "lost_or_stolen_card"}
+{"id": "b77-065", "input": "Can I use a bank transfer to refill my account?", "gold": "transfer_into_account", "slice": "transfer_into_account"}
+{"id": "b77-066", "input": "I believe my card has been stolen, what can I do about this situation? It's urgent.", "gold": "lost_or_stolen_card", "slice": "lost_or_stolen_card"}
+{"id": "b77-067", "input": "Please help me as i am continuously facing the issue in transferring money to my friends, as all my transactions are getting failed.", "gold": "failed_transfer", "slice": "failed_transfer"}
+{"id": "b77-068", "input": "Hi there! I need to cancel an order I recently made and start processing a refund. Can you please help me with this and set up the refund as soon as possible? It's very urgent.", "gold": "request_refund", "slice": "request_refund"}
+{"id": "b77-069", "input": "Please help me make a transfer. I keep receiving an error and I'm trying to make the initial mortgage payment for a flat I'm buying. What is the deal here?", "gold": "failed_transfer", "slice": "failed_transfer"}
+{"id": "b77-070", "input": "Can I receive a refund for my item?", "gold": "request_refund", "slice": "request_refund"}
+{"id": "b77-071", "input": "How do I use the top up app with my apple watch?", "gold": "apple_pay_or_google_pay", "slice": "apple_pay_or_google_pay"}
+{"id": "b77-072", "input": "What is the tracking number for my card that was mailed?", "gold": "card_arrival", "slice": "card_arrival"}
+{"id": "b77-073", "input": "I don't know what to do. Should I transfer funds. My account is out of money.", "gold": "transfer_into_account", "slice": "transfer_into_account"}
+{"id": "b77-074", "input": "How can I transfer money from an outside bank?", "gold": "transfer_into_account", "slice": "transfer_into_account"}
+{"id": "b77-075", "input": "I need my card as soon as possible.", "gold": "card_delivery_estimate", "slice": "card_delivery_estimate"}
+{"id": "b77-076", "input": "What's the U.S. Delivery time?", "gold": "card_delivery_estimate", "slice": "card_delivery_estimate"}
+{"id": "b77-077", "input": "My top up is not working in Apple Pay.", "gold": "apple_pay_or_google_pay", "slice": "apple_pay_or_google_pay"}
+{"id": "b77-078", "input": "I need my card quickly", "gold": "card_delivery_estimate", "slice": "card_delivery_estimate"}
+{"id": "b77-079", "input": "I want to return an item.", "gold": "request_refund", "slice": "request_refund"}
+{"id": "b77-080", "input": "I am unhappy with my purchase, how do I cancel the order?", "gold": "request_refund", "slice": "request_refund"}
+{"id": "b77-081", "input": "I would like to transfer money from my other bank account into this one.", "gold": "transfer_into_account", "slice": "transfer_into_account"}
+{"id": "b77-082", "input": "My card does not work", "gold": "card_not_working", "slice": "card_not_working"}
+{"id": "b77-083", "input": "What are the steps I follow to transfer money into my account?", "gold": "transfer_into_account", "slice": "transfer_into_account"}
+{"id": "b77-084", "input": "My card isn't working anymore.", "gold": "card_not_working", "slice": "card_not_working"}
+{"id": "b77-085", "input": "I ordered something ages ago online but it's simply not arriving. I've got enough! Give me back my money, I'm not paying these people.", "gold": "request_refund", "slice": "request_refund"}
+{"id": "b77-086", "input": "What can I do to verify my identity?", "gold": "verify_my_identity", "slice": "verify_my_identity"}
+{"id": "b77-087", "input": "I would like to transfer funds from one account to another.", "gold": "transfer_into_account", "slice": "transfer_into_account"}
+{"id": "b77-088", "input": "Do I need any kind of documentation for the identity check?", "gold": "verify_my_identity", "slice": "verify_my_identity"}
+{"id": "b77-089", "input": "Why would a transfer fail?", "gold": "failed_transfer", "slice": "failed_transfer"}
+{"id": "b77-090", "input": "I received my American Express card, but I am having problems making it work with Apple pay.  Can you help me with this problem?", "gold": "apple_pay_or_google_pay", "slice": "apple_pay_or_google_pay"}
+{"id": "b77-091", "input": "Why couldn't I complete a transfer?", "gold": "failed_transfer", "slice": "failed_transfer"}
+{"id": "b77-092", "input": "I still have not received my new card, I ordered over a week ago.", "gold": "card_arrival", "slice": "card_arrival"}
+{"id": "b77-093", "input": "When I want to transfer money to my account, how can I do that?", "gold": "transfer_into_account", "slice": "transfer_into_account"}
+{"id": "b77-094", "input": "My transfer keeps failing and I just want to transfer the money can you please make it work?", "gold": "failed_transfer", "slice": "failed_transfer"}
+{"id": "b77-095", "input": "My card appears to be broken how can I fix it?", "gold": "card_not_working", "slice": "card_not_working"}
+{"id": "b77-096", "input": "how do i add money with my apple watch", "gold": "apple_pay_or_google_pay", "slice": "apple_pay_or_google_pay"}
+{"id": "b77-097", "input": "Can I do a bank transfer to put additional money in my account because I am out of money?", "gold": "transfer_into_account", "slice": "transfer_into_account"}
+{"id": "b77-098", "input": "Need help with my card. It's not working.", "gold": "card_not_working", "slice": "card_not_working"}
+{"id": "b77-099", "input": "I wasn't charged the correct amount for an item I purchased, how can I fix this?", "gold": "request_refund", "slice": "request_refund"}
+{"id": "b77-100", "input": "Can someone assist me by explaining why my card is not working?", "gold": "card_not_working", "slice": "card_not_working"}

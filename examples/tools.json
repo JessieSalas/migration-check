@@ -1,0 +1,28 @@
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "order_status",
+      "description": "Check the delivery status of a fictional support order.",
+      "parameters": {
+        "type": "object",
+        "properties": {"order_code": {"type": "string"}},
+        "required": ["order_code"],
+        "additionalProperties": false
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "refund_request",
+      "description": "Open a refund request for a fictional order after the customer asks for a refund.",
+      "parameters": {
+        "type": "object",
+        "properties": {"order_code": {"type": "string"}, "reason": {"type": "string"}},
+        "required": ["order_code", "reason"],
+        "additionalProperties": false
+      }
+    }
+  }
+]

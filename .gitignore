@@ -1,0 +1,12 @@
+# Python and packaging
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+dist/
+build/
+
+# Local audit output (raw inputs and model replies live here)
+runs/
+migration-check-sample/
+migration-check-sample-offline/
