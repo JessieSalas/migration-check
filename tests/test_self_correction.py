@@ -11,9 +11,13 @@ from migration_check.protocol import json_objects, parse_keyed, recover_keyed
 from migration_check.report import build_report, self_correction_text
 
 TWO_OBJECTS = '{"1": "a", "2": "b"} Wait, message 2 is c. {"1": "a", "2": "c"}'
-SENTENCE = ("Self-correction: the model answered, then wrote a second JSON answer in the same reply (2 calls). "
-            "A parser expecting one JSON object fails on these; merging the objects, later answers winning, "
-            "recovers 4 of 4 answers (4 correct).")
+# Draw 1's second object corrects only message 2, so last-object recovery reads 1 of its 2 answers.
+SENTENCE = ("Self-correction: 2 calls answered, then wrote a second JSON answer in the same reply. "
+            "A strict parser expects one JSON object and reads no answer from such a reply. "
+            "As recorded, 2 calls ended with no parseable reply. "
+            "Strict, as recorded: 0 of 4 answers in these calls parse and 0 are correct. "
+            "Last-object recovery: 3 of 4 parse and 3 are correct. "
+            "Object-merge recovery: 4 of 4 parse and 4 are correct.")
 
 
 class ScannerTests(unittest.TestCase):
@@ -128,15 +132,22 @@ class SelfCorrectionRunTests(unittest.TestCase):
         earlier = next(c for c in calls if c["arm"] == "new" and c["draw"] == 1)
         # A retry that parsed: the call still had a self-correction, but its last attempt was not one.
         earlier["attempts"][-1].pop("self_correction")
-        earlier["attempts"][-1].update(error=None, parse_failures=0, json_objects=1)
+        earlier["attempts"][-1].update(error=None, parse_failures=0, json_objects=1, parsed_answers=["yes", "no"])
+        earlier["error"] = None
+        for prediction, answer in zip(earlier["predictions"], ["yes", "no"]):
+            prediction.update(answer=answer, pattern=None)
         recovery = analyze(manifest, rows, calls)["hazard_summary"]["new"]
         self.assertEqual(recovery["self_correction"], 2)
         self.assertEqual(recovery["self_correction_recoverable_items"],
                          {"calls": 1, "items": 2, "on_list": 1, "gold_items": 1, "correct": 1,
                           "retry_parsed": 1, "other_failure": 0, "unrecorded": 0})
+        # The policies read the stored reply text, not the descriptive recovered_answers field.
+        # Last-object recovery stops at draw 1's first reply, whose last object answers 1 of 2.
         self.assertTrue(self_correction_text(recovery).endswith(
-            "in the 1 call whose last attempt was one, merging the objects, later answers winning, "
-            "recovers 1 of 2 answers (1 correct); a retry parsed 1 of them."))
+            "As recorded, 1 call parsed on a retry and 1 call ended with no parseable reply. "
+            "Strict, as recorded: 2 of 4 answers in these calls parse and 2 are correct. "
+            "Last-object recovery: 3 of 4 parse and 3 are correct. "
+            "Object-merge recovery: 4 of 4 parse and 4 are correct."), self_correction_text(recovery))
 
     def test_a_retry_that_fails_another_way_is_not_reported_as_parsed(self):
         directory, manifest, rows, calls = self.self_correct_run()
@@ -148,12 +159,15 @@ class SelfCorrectionRunTests(unittest.TestCase):
         self.assertEqual((new["self_correction_recoverable_items"]["retry_parsed"],
                           new["self_correction_recoverable_items"]["other_failure"]), (0, 2))
         text = self_correction_text(new)
-        self.assertNotIn("a retry parsed", text)
-        self.assertTrue(text.endswith("every one ended in another failure on its last attempt (see the call errors)."))
-        calls[-1]["attempts"][-1].update(error=None, parse_failures=0)
+        self.assertNotIn("parsed on a retry", text)
+        self.assertIn("As recorded, 2 calls ended in another failure (see the call errors).", text)
+        last_new = [c for c in calls if c["arm"] == "new"][-1]
+        last_new["attempts"][-1].update(error=None, parse_failures=0)
+        for prediction, answer in zip(last_new["predictions"], ["yes", "no"]):
+            prediction.update(answer=answer, pattern=None)
         mixed = self_correction_text(analyze(manifest, rows, calls)["hazard_summary"]["new"])
-        self.assertTrue(mixed.endswith("; a retry parsed 1 of them; 1 ended in another failure on its last "
-                                       "attempt (see the call errors)."), mixed)
+        self.assertIn("As recorded, 1 call parsed on a retry and 1 call ended in another failure "
+                      "(see the call errors).", mixed)
 
     def test_old_capture_without_new_keys_still_analyses_and_reports(self):
         directory, *_ = self.self_correct_run()

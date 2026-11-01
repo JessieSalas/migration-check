@@ -164,7 +164,7 @@ class SampleTests(unittest.TestCase):
             self.assertIn("Gold: " + item["gold"], markdown)
         self.assertIn("Input: ", markdown)
         self.assertRegex(markdown, r"Stable (regression|improvement): old correct in [0-9]+ of 3 draws")
-        self.assertRegex(markdown, r"Accuracy on gold: old [0-9.]+%, new [0-9.]+% \(D\* [-+][0-9.]+ percentage points")
+        self.assertRegex(markdown, r"Strict accuracy on gold: old [0-9.]+%, new [0-9.]+% \(D\* [-+][0-9.]+ percentage points")
         self.assertNotIn('"pending human review"', markdown)
         self.assertIn("each card shows the ticket text, its gold label", stdout)
         self.assertIn("report --runs " + str(out / "runs") + " --out " + str(out / "report.html") + " --show-text", stdout)

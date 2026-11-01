@@ -34,52 +34,135 @@ def plural(count, word="call"):
     return f"{count} {word}{'' if count == 1 else 's'}"
 
 
+def join_clauses(clauses):
+    return clauses[0] if len(clauses) == 1 else ", ".join(clauses[:-1]) + " and " + clauses[-1]
+
+
+def parsed_text(counts, scope=""):
+    """'6 of 12 answers parse and 5 are correct', with every denominator stated."""
+    if not counts.get("available", True):
+        return "not recorded (" + counts.get("reason", "no reply text") + ")"
+    text = f"{counts['parsed']} of {counts['answers']}{scope} parse"
+    if counts["gold"] and counts["gold"] == counts["answers"]:
+        text += f" and {counts['correct']} are correct"
+    elif counts["gold"]:
+        text += f", and {counts['correct']} of the {counts['gold']} with gold are correct"
+    return text
+
+
 def self_correction_text(row):
-    """The self-correction hazard in plain words, or None when no call had one."""
+    """The self-correction hazard in short plain sentences, or None when no call had one.
+
+    Each parse policy is reported on its own, over the same answers, and never mixed.
+    """
     calls = row.get("self_correction", 0)
     if calls is None:
         return ("Self-correction: not recorded for the archived arm (its archive predates these counts), "
                 "so a self-correction in the other arm is not evidence that this arm never had one.")
     if not calls:
         return None
-    text = ("Self-correction: the model answered, then wrote a second JSON answer in the same reply "
-            f"({plural(calls)}). A parser expecting one JSON object fails on these; ")
-    recovery = row.get("self_correction_recoverable_items") or {}
-    final, parsed = recovery.get("calls", 0), recovery.get("retry_parsed", 0)
-    other = recovery.get("other_failure", 0)
-    clauses = []
-    if final:
-        clause = ("merging the objects, later answers winning, recovers " if final == calls else
-                  f"in the {plural(final)} whose last attempt was one, merging the objects, later answers "
-                  "winning, recovers ")
-        clause += f"{recovery['on_list']} of {recovery['items']} answers"
-        if recovery.get("gold_items"):
-            clause += (f" ({recovery['correct']} correct)" if recovery["gold_items"] == recovery["on_list"] else
-                       f" ({recovery['correct']} correct of {recovery['gold_items']} with gold)")
-        clauses.append(clause)
-    if parsed:
-        clauses.append("a retry parsed every one of them" if parsed == calls else
-                       f"a retry parsed {parsed} of them")
-    if other:
-        clauses.append(("every one" if other == calls else str(other)) +
-                       " ended in another failure on its last attempt (see the call errors)")
-    return text + "; ".join(clauses) + "." if clauses else text[:-2] + "."
+    sentences = [f"Self-correction: {plural(calls)} answered, then wrote a second JSON answer in the same reply.",
+                 "A strict parser expects one JSON object and reads no answer from such a reply."]
+    outcomes = row.get("self_correction_outcomes")
+    if outcomes:
+        clauses = [plural(outcomes[key]) + text for key, text in (
+            ("retry_parsed_calls", " parsed on a retry"),
+            ("unparsed_calls", " ended with no parseable reply"),
+            ("other_failure_calls", " ended in another failure (see the call errors)")) if outcomes[key]]
+        if clauses:
+            sentences.append("As recorded, " + join_clauses(clauses) + ".")
+        policies = outcomes["policies"]
+        sentences.append("Strict, as recorded: " + parsed_text(policies["strict"], " answers in these calls") + ".")
+        for policy, name in (("last_object", "Last-object recovery"), ("object_merge", "Object-merge recovery")):
+            if policy in policies:
+                sentences.append(name + ": " + parsed_text(policies[policy]) + ".")
+    return " ".join(sentences)
+
+
+def policy_table(data):
+    """Parse success and accuracy per arm under each named parse policy, as finished text.
+
+    Returns {"header", "rows", "notes"} so the page, the JSON and the Markdown show the same cells.
+    """
+    policies = data.get("parse_policies")
+    if not policies:
+        return None
+    arms, applicable = policies["arms"], policies["applicable"]
+    base = arms["old"]["strict"]
+    has_gold = base["gold"] > 0
+    scope = f"each model: {plural(base['calls'])}, {plural(base['answers'], 'answer')}"
+    if has_gold:
+        scope += ", all with gold" if base["gold"] == base["answers"] else f", {base['gold']} with gold"
+    header = [f"Measure ({scope})", "old", "new"]
+
+    def cell(arm, policy, numerator, denominator, rate):
+        counts = arms[arm][policy]
+        if not counts.get("available", True):
+            return "not recorded"
+        if not counts[denominator]:
+            return "none"
+        text = f"{counts[numerator]} of {counts[denominator]}"
+        return text + f" ({percent(counts[rate])})" if rate else text
+
+    def row(label, policy, numerator, denominator, rate=None):
+        return [label] + [cell(arm, policy, numerator, denominator, rate) for arm in ("old", "new")]
+
+    rows = [row("Strict parse: calls with every answer parsed", "strict", "calls_parsed", "calls"),
+            row("Strict parse: answers parsed", "strict", "parsed", "answers")]
+    names = {"strict_first_attempt": "strict, first reply only (no retries)",
+             "last_object": "last-object recovery", "object_merge": "object-merge recovery (later answers win)"}
+    if has_gold:
+        rows += [row("Strict accuracy: correct of all gold answers (a missing or off-list answer counts wrong)",
+                     "strict", "correct", "gold", "accuracy"),
+                 row("Accuracy among strictly parsed answers only", "strict", "correct", "parsed_gold",
+                     "parsed_accuracy")]
+        rows += [row("Accuracy, " + names[policy], policy, "correct", "gold", "accuracy")
+                 for policy in applicable[1:]]
+    else:
+        rows += [row("Answers parsed, " + names[policy], policy, "parsed", "answers") for policy in applicable[1:]]
+    retries = policies.get("retries")
+    retry_text = "a reply it cannot read is retried" + (f", up to {plural(retries, 'time')}" if retries is not None else "")
+    definition = ("Parse policies. Strict is the recorded run. " +
+                  ("It reads one JSON object per reply, and " if len(applicable) > 2 else "In it, ") +
+                  retry_text + ". First reply only scores each call's first reply, with no retries.")
+    if len(applicable) > 2:
+        definition += (" Last-object recovery takes the last complete JSON answer object in a reply the strict "
+                       "parser could not read. Object-merge recovery merges every JSON answer object in that "
+                       "reply, later answers winning. Both read the stored replies in order and stop at the "
+                       "first that yields an answer, so neither makes a new call. The run's own answers stay strict.")
+    notes = [definition]
+    if has_gold and any(arms[arm]["strict"]["parsed"] < arms[arm]["strict"]["answers"] for arm in ("old", "new")):
+        notes.append("Strict accuracy counts a missing answer as wrong. If a recovery row closes most of a gap, "
+                     "most of that gap is answers the strict parser could not read, not wrong answers.")
+    return {"header": header, "rows": rows, "notes": notes}
 
 
 def summary_lines(data):
     """Headline numbers as finished text, so the Python and browser exports print the same thing."""
     hazards = data["hazard_summary"]
-    lines = ["Format hazards (final answers): " + "; ".join(
+    lines = ["Format hazards (final answers, as recorded): " + "; ".join(
         f"{arm} {hazards[arm]['parse_failures']} missing or unparseable, {hazards[arm]['off_list']} off-list"
         for arm in ("old", "new")) + f", out of {data['n_items'] * data['draws']} per model."]
+    table = data.get("parse_policy_table") or policy_table(data)
+    paragraphs = []
+    if table:
+        lines += ["", "| " + " | ".join(table["header"]) + " |", "| --- | --- | --- |"]
+        lines += ["| " + " | ".join(row) + " |" for row in table["rows"]]
+        paragraphs += table["notes"][:1]
+    if data.get("gold"):
+        gold = data["gold"]
+        paragraphs.append(f"Strict accuracy on gold: old {percent(gold['old_accuracy'])}, new "
+                          f"{percent(gold['new_accuracy'])} (D* {100 * gold['Dstar']:+.1f} percentage points, "
+                          "new minus old).")
+    if table:
+        paragraphs += table["notes"][1:]
     for arm in ("old", "new"):
         text = self_correction_text(hazards[arm])
         if text:
-            lines.append(f"{arm}: {text}")
-    if data.get("gold"):
-        gold = data["gold"]
-        lines.append(f"Accuracy on gold: old {percent(gold['old_accuracy'])}, new {percent(gold['new_accuracy'])} "
-                     f"(D* {100 * gold['Dstar']:+.1f} percentage points, new minus old).")
+            paragraphs.append(f"{arm}: {text}")
+    # Blank lines keep each sentence group its own Markdown paragraph.
+    for paragraph in paragraphs:
+        lines += ["", paragraph]
     return lines
 
 
@@ -121,6 +204,8 @@ def decision_record(data):
     if data.get("answer") == "tool":
         record["tool_choice_hazards"] = {arm: {key: data["hazard_summary"][arm][key] for key in TOOL_HAZARDS}
                                          for arm in ("old", "new")}
+    if data.get("parse_policies"):
+        record["parse_policies"] = copy.deepcopy(data["parse_policies"])
     record["items"] = copy.deepcopy(data["review_queue"])
     return record
 
@@ -220,6 +305,7 @@ def build_report(runs, output, show_text=False):
     # Finished text, so the page shows the same sentence as the decision exports.
     data["self_correction_notes"] = {arm: text for arm in ("old", "new")
                                      if (text := self_correction_text(data["hazard_summary"][arm]))}
+    data["parse_policy_table"] = policy_table(data)
     simulated = simulated_arms(manifest["models"])
     if simulated:
         data["simulated"] = True

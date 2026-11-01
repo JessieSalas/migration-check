@@ -5,11 +5,83 @@ import json
 import math
 from pathlib import Path
 
-from .protocol import normalize, pattern, read_inputs, validate_gold
+from .protocol import answer_objects, keyed_answers, normalize, pattern, read_inputs, recover_keyed, validate_gold
 from .privacy import answer_key
 from .providers import model_ids, safe_tool_error, split_model
 from .stats import ALPHA, PERMUTATIONS, bh, distribution_test, graded_test
 from .tools import REPLY_FAILURES, STOP_HAZARDS, TOOL_HAZARDS
+
+# Parse policies, each scored separately and never mixed. "strict" is the recorded run.
+STRICT_POLICIES = ("strict", "strict_first_attempt")
+RECOVERY_POLICIES = ("last_object", "object_merge")
+POLICY_LABELS = {"strict": "Strict (the recorded run, with its retries)",
+                 "strict_first_attempt": "Strict, first reply only (no retries)",
+                 "last_object": "Last-object recovery",
+                 "object_merge": "Object-merge recovery (later answers win)"}
+
+
+UNRECORDED_POLICY = {"available": False, "reason": "the archive holds no reply text for this arm"}
+
+
+class Unrecorded(Exception):
+    """The reply text a recovery policy needs was not kept (an archive made without raw text)."""
+
+
+def recovered_answers(attempt, policy, size, archived):
+    """(answers, already_pseudonymised) that a recovery policy reads from one stored reply."""
+    raw = attempt.get("raw_text")
+    # An archive made without raw text replays each reply as "", which is not an empty reply.
+    if isinstance(raw, str) and (raw or not archived):
+        if policy == "last_object":
+            objects = answer_objects(raw, size)
+            return (keyed_answers(objects[-1], size) if objects else [None] * size), False
+        return recover_keyed(raw, size)[1], False
+    if attempt.get("json_objects") == 0:
+        return [None] * size, False
+    if policy == "object_merge" and attempt.get("recovered_answers") is not None:
+        return list(attempt["recovered_answers"]), archived
+    raise Unrecorded
+
+
+def policy_answers(policy, call, recorded, size, comparable):
+    """One call's answers under a parse policy, replaying the stored replies in order.
+
+    Strict is the recorded outcome. A recovery policy reads each stored reply in turn
+    and stops at the first that yields an answer, as the run's retries did; it reads a
+    reply's objects only where the strict parser read nothing, so it never makes a call.
+    """
+    if call is None:
+        return [None] * size
+    attempts = call["attempts"]
+    if policy == "strict":
+        return list(recorded)
+    if policy == "strict_first_attempt":
+        # The runner retries only a reply that yielded no answer at all.
+        return list(recorded) if len(attempts) <= 1 else [None] * size
+    for index, attempt in enumerate(attempts):
+        strict = recorded if index == len(attempts) - 1 else [None] * size
+        if any(value is not None for value in strict):
+            return list(strict)
+        if attempt.get("error") in (None, "unparseable"):
+            values, encoded = recovered_answers(attempt, policy, size, bool(call.get("archived")))
+            values = [value if encoded or value is None else comparable(value) for value in values]
+            if any(value is not None for value in values):
+                return values
+        if attempt.get("error") in STOP_HAZARDS + ("unknown_tool",):
+            break
+    return [None] * size
+
+
+def policy_counts():
+    return dict.fromkeys(("calls", "calls_parsed", "answers", "parsed", "gold", "parsed_gold", "correct"), 0)
+
+
+def finish_counts(counts):
+    """Rates with their numerators and denominators; None where the denominator is 0."""
+    counts["accuracy"] = counts["correct"] / counts["gold"] if counts["gold"] else None
+    counts["parsed_accuracy"] = counts["correct"] / counts["parsed_gold"] if counts["parsed_gold"] else None
+    counts["available"] = True
+    return counts
 
 
 def distribution(values):
@@ -107,6 +179,30 @@ def analyze(manifest, rows, calls, show_text=False):
         warnings.append(manifest["draws_notice"])
     recovery = {arm: dict.fromkeys(("calls", "items", "on_list", "gold_items", "correct", "retry_parsed",
                                     "other_failure", "unrecorded"), 0) for arm in answers}
+    applicable = STRICT_POLICIES + (RECOVERY_POLICIES if not tool_mode and manifest["batch"] > 1 else ())
+    policies = {arm: {policy: policy_counts() for policy in applicable} for arm in answers}
+    # The same counts restricted to calls with a self-correction, plus how their retries ended.
+    corrected = {arm: {"calls": 0, "answers": 0, "gold": 0, "retry_parsed_calls": 0, "unparsed_calls": 0,
+                       "other_failure_calls": 0,
+                       "policies": {policy: policy_counts() for policy in ("strict",) + applicable[2:]}}
+                 for arm in answers}
+    unrecorded_policy = {arm: set() for arm in answers}
+
+    def is_correct(value, i):
+        return (value is not None and (not labels or value in labels) and "gold" in rows[i]
+                and value == comparable(rows[i]["gold"]))
+
+    def tally(counts, values, start):
+        counts["calls"] += 1
+        counts["calls_parsed"] += int(all(value is not None for value in values))
+        for offset, value in enumerate(values):
+            counts["answers"] += 1
+            counts["parsed"] += int(value is not None)
+            if "gold" in rows[start + offset]:
+                counts["gold"] += 1
+                counts["parsed_gold"] += int(value is not None)
+                counts["correct"] += int(is_correct(value, start + offset))
+
     for arm in answers:
         is_archived = arm == "old" and archived_old is not None
         requested = split_model(manifest["models"][arm])[1]
@@ -183,6 +279,31 @@ def analyze(manifest, rows, calls, show_text=False):
                             mine = value if call.get("archived") else comparable(value)
                             recovery[arm]["gold_items"] += 1
                             recovery[arm]["correct"] += int(mine == comparable(row["gold"]))
+                recorded = answers[arm][draw][start:start + size]
+                outcome = {}
+                for policy in applicable:
+                    if policy in unrecorded_policy[arm]:
+                        continue
+                    try:
+                        outcome[policy] = policy_answers(policy, call, recorded, size, comparable)
+                    except Unrecorded:
+                        unrecorded_policy[arm].add(policy)
+                        continue
+                    tally(policies[arm][policy], outcome[policy], start)
+                if hazards[-1]["self_correction"]:
+                    group = corrected[arm]
+                    group["calls"] += 1
+                    group["answers"] += size
+                    group["gold"] += sum("gold" in rows[start + offset] for offset in range(size))
+                    if any(value is not None for value in recorded):
+                        group["retry_parsed_calls"] += 1
+                    elif final.get("error") in (None, "unparseable"):
+                        group["unparsed_calls"] += 1
+                    else:
+                        group["other_failure_calls"] += 1
+                    for policy, subset in group["policies"].items():
+                        if policy in outcome:
+                            tally(subset, outcome[policy], start)
         served[arm] = sorted(served_ids)
         if not is_archived and served_ids - {requested}:
             warnings.append(f"Served-model mismatch for {arm}: requested {requested}; served " + ", ".join(sorted(served_ids)) + ". Aliases may resolve to dated IDs; verify this pair.")
@@ -297,6 +418,18 @@ def analyze(manifest, rows, calls, show_text=False):
         summary[arm]["self_correction"] = (None if recovery[arm]["unrecorded"] else
                                            sum(row["self_correction"] for row in arm_rows))
         summary[arm]["self_correction_recoverable_items"] = recovery[arm]
+        group = corrected[arm]
+        group["policies"] = {policy: (UNRECORDED_POLICY.copy() if policy in unrecorded_policy[arm]
+                                      else finish_counts(subset)) for policy, subset in group["policies"].items()}
+        summary[arm]["self_correction_outcomes"] = None if recovery[arm]["unrecorded"] else group
+    policy_result = {"retries": manifest.get("retries"), "applicable": list(applicable),
+                     "labels": {policy: POLICY_LABELS[policy] for policy in applicable},
+                     "not_applicable": ({} if len(applicable) > 2 else
+                                        {policy: "replies are not batched JSON objects (tool mode or batch 1)"
+                                         for policy in RECOVERY_POLICIES}),
+                     "arms": {arm: {policy: (UNRECORDED_POLICY.copy() if policy in unrecorded_policy[arm]
+                                             else finish_counts(policies[arm][policy])) for policy in applicable}
+                              for arm in answers}}
     confusion = Counter((counts([answers["old"][d][i] for d in range(r)], "old")[0]["answer"],
                          counts([answers["new"][d][i] for d in range(r)], "new")[0]["answer"]) for i in range(n)) if tool_mode else Counter()
     return {"schema_version": 1, "created_at": manifest["created_at"], "models": manifest["models"],
@@ -309,6 +442,7 @@ def analyze(manifest, rows, calls, show_text=False):
             "served_models": served, "n_items": n, "draws": r, "batch": manifest["batch"],
             "labels": labels, "warnings": warnings, "hazard_summary": summary, "hazards": hazards,
             "draw_strip": strips, "self_disagreement_floor": floors, "gold": gold_result,
+            "parse_policies": policy_result,
             "unlabelled": {"n_items": len(changed_items), "items": changed_items, "permutations": PERMUTATIONS,
                            "seed": 0, "power": power,
                            "method": "total variation of both answer distributions, pooled 2R reallocation, inclusive +1 Monte Carlo p; BH over all unlabelled items"},
