@@ -1,0 +1,6 @@
+{"id": "c374", "input": "which day is it now", "gold": "date", "slice": "date"}
+{"id": "c375", "input": "please tell my bank i'll be in anchorage this week", "gold": "travel_notification", "slice": "travel_notification"}
+{"id": "c376", "input": "whats the mpg of this car", "gold": "mpg", "slice": "mpg"}
+{"id": "c377", "input": "give me some feedback about the pasta at piada please", "gold": "restaurant_reviews", "slice": "restaurant_reviews"}
+{"id": "c378", "input": "turn the oven to 350", "gold": "smart_home", "slice": "smart_home"}
+{"id": "c379", "input": "my list of reminders contains what", "gold": "reminder", "slice": "reminder"}

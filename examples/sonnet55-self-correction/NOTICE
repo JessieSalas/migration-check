@@ -1,0 +1,8 @@
+CLINC150 (inputs.jsonl and labels.txt in this directory)
+Larson, Mahendran, Peper, Clarke, Lee, Hill, Kummerfeld, Leach, Laurenzano, Tang and Mars (2019), "An Evaluation Dataset
+for Intent Classification and Out-of-Scope Prediction", EMNLP-IJCNLP 2019.
+Source: https://github.com/clinc/oos-eval
+Licence: Creative Commons Attribution 3.0 Unported (CC BY 3.0), https://creativecommons.org/licenses/by/3.0/
+Changes: 6 in-scope test utterances (positions 374 to 379 of a seeded 750-item sample), given ids c374 to c379; text and
+labels are otherwise unchanged. labels.txt lists the 150 in-scope intent labels. This data is not covered by the
+repository's MIT licence.

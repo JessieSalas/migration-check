@@ -6,8 +6,13 @@ LICENSE
 PUBLISH-MANIFEST.txt
 README.md
 TESTING.md
+docs/FINDINGS-2026-11-01.md
 examples/inputs.jsonl
 examples/labels.txt
+examples/sonnet55-self-correction/NOTICE
+examples/sonnet55-self-correction/README.md
+examples/sonnet55-self-correction/inputs.jsonl
+examples/sonnet55-self-correction/labels.txt
 examples/system.txt
 examples/tool_inputs.jsonl
 examples/tools.json
@@ -52,5 +57,5 @@ tests/test_parse_policies.py
 tests/test_sample.py
 tests/test_self_correction.py
 tests/test_tools.py
-tests/test_v02_fixes.py
 tests/test_user_agent.py
+tests/test_v02_fixes.py

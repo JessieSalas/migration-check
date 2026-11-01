@@ -120,6 +120,8 @@ Off-list examples (up to 3 per model, most frequent first, each beside its close
 
 Two findings, both from 1 Nov 2026. First, a self-correction hazard in Claude Sonnet 5.5, called through the Claude Code CLI at its defaults (no extended thinking), on a 6-message trigger set from CLINC150's public test split: the model answers the batch, writes a note such as "Wait, message 6 is ...", then writes a second, corrected JSON object, so a strict one-object parser reads no answer from the reply (the worked example above). Scope: the CLI wraps its own system prompt around the request, so this is the tested configuration, not every Sonnet 5.5 deployment. Second, the first live run of the `openai-compatible` adapter, against Together AI, met HTTP 403 because Together rejects urllib's default `Python-urllib` User-Agent; since v0.4.2 every request sends `User-Agent: migration-check/<version>`, which Together accepts. Details are in [TESTING.md](TESTING.md).
 
+The same day it compared three real upgrades on Together AI across three public datasets, with three different outcomes: one cleared, one with intents worse behind a flat average, and one cheaper tier that broke the label format on one task while improving another. Those results, with one rerun command per claim and its cost, are in [docs/FINDINGS-2026-11-01.md](docs/FINDINGS-2026-11-01.md); the 6-message reproducer is in [examples/sonnet55-self-correction](examples/sonnet55-self-correction/README.md).
+
 ## Scope, honestly
 
 **What it scores:** labels, and the first tool choice. Nothing else.
