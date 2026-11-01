@@ -45,6 +45,7 @@ tests/fixtures/openai_refusal.json
 tests/fixtures/openai_tools.json
 tests/fixtures/openai_truncated.json
 tests/test_archive.py
+tests/test_decision_summary.py
 tests/test_fixes.py
 tests/test_migration_check.py
 tests/test_parse_policies.py

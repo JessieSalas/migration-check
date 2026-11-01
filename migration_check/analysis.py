@@ -1,6 +1,7 @@
 """Audit summaries. Raw provider replies never enter the analysis object."""
 
 from collections import Counter
+import difflib
 import json
 import math
 from pathlib import Path
@@ -73,15 +74,57 @@ def policy_answers(policy, call, recorded, size, comparable):
 
 
 def policy_counts():
-    return dict.fromkeys(("calls", "calls_parsed", "answers", "parsed", "gold", "parsed_gold", "correct"), 0)
+    return dict.fromkeys(("calls", "calls_parsed", "answers", "parsed", "on_list", "gold", "parsed_gold",
+                          "on_list_gold", "correct"), 0)
 
 
 def finish_counts(counts):
     """Rates with their numerators and denominators; None where the denominator is 0."""
     counts["accuracy"] = counts["correct"] / counts["gold"] if counts["gold"] else None
     counts["parsed_accuracy"] = counts["correct"] / counts["parsed_gold"] if counts["parsed_gold"] else None
+    # On-list: parsed and spelled exactly as an allowed label (every parsed answer when there is no list).
+    counts["on_list_accuracy"] = counts["correct"] / counts["on_list_gold"] if counts["on_list_gold"] else None
     counts["available"] = True
     return counts
+
+
+Z95 = 1.959963984540054
+
+
+def paired_interval(old, new):
+    """95% interval for new minus old of two ratio estimates, clustered by input and paired.
+
+    old and new are per-input (numerator, denominator) pairs over every draw. The ratio
+    sum(numerators) / sum(denominators) is linearised per input, so repeated draws of one input
+    count once and an input's old and new answers stay paired. Normal approximation; None when
+    there are fewer than 2 inputs or a denominator is 0.
+    """
+    n = len(old)
+    totals = [(sum(y for y, _ in arm), sum(x for _, x in arm)) for arm in (old, new)]
+    if n < 2 or not totals[0][1] or not totals[1][1]:
+        return None
+    rates = [y / x for y, x in totals]
+    means = [x / n for _, x in totals]
+    terms = [(yn - rates[1] * xn) / means[1] - (yo - rates[0] * xo) / means[0]
+             for (yo, xo), (yn, xn) in zip(old, new)]
+    centre = sum(terms) / n
+    half = Z95 * math.sqrt(sum((t - centre) ** 2 for t in terms) / (n * (n - 1)))
+    difference = rates[1] - rates[0]
+    return [difference - half, difference + half]
+
+
+def closest_label(answer, labels):
+    """The allowed label nearest an off-list answer, ignoring case, underscores and hyphens."""
+    key = lambda text: " ".join(text.replace("_", " ").replace("-", " ").split()).casefold()
+    target = key(answer)
+    # Highest similarity wins; ties go to the label listed first.
+    return max(enumerate(labels), key=lambda pair: (difflib.SequenceMatcher(None, target, key(pair[1])).ratio(),
+                                                    -pair[0]))[1]
+
+
+def shorten(text, limit=80):
+    text = " ".join(text.split())
+    return text if len(text) <= limit else text[:limit - 3] + "..."
 
 
 def distribution(values):
@@ -192,15 +235,20 @@ def analyze(manifest, rows, calls, show_text=False):
         return (value is not None and (not labels or value in labels) and "gold" in rows[i]
                 and value == comparable(rows[i]["gold"]))
 
+    def on_list(value):
+        return value is not None and (not labels or value in labels)
+
     def tally(counts, values, start):
         counts["calls"] += 1
         counts["calls_parsed"] += int(all(value is not None for value in values))
         for offset, value in enumerate(values):
             counts["answers"] += 1
             counts["parsed"] += int(value is not None)
+            counts["on_list"] += int(on_list(value))
             if "gold" in rows[start + offset]:
                 counts["gold"] += 1
                 counts["parsed_gold"] += int(value is not None)
+                counts["on_list_gold"] += int(on_list(value))
                 counts["correct"] += int(is_correct(value, start + offset))
 
     for arm in answers:
@@ -372,6 +420,20 @@ def analyze(manifest, rows, calls, show_text=False):
                        "old_accuracy": sum(ki) / (r * len(gold_indices)),
                        "new_accuracy": sum(kc) / (r * len(gold_indices)),
                        "primary_min_p": None}
+        # Item-clustered, paired 95% intervals: strict accuracy over every gold answer, and accuracy
+        # among on-list answers only (correct over answers that parsed and use an allowed label).
+        strict_pairs = {arm: [(k, r) for k in (ki if arm == "old" else kc)] for arm in answers}
+        gold_result["Dstar_ci95"] = paired_interval(strict_pairs["old"], strict_pairs["new"])
+        on_pairs = {arm: [(k, sum(on_list(answers[arm][d][i]) for d in range(r)))
+                          for k, i in zip(ki if arm == "old" else kc, gold_indices)] for arm in answers}
+        on_totals = {arm: (sum(k for k, _ in on_pairs[arm]), sum(x for _, x in on_pairs[arm])) for arm in answers}
+        gold_result["on_list"] = {
+            **{arm: {"correct": on_totals[arm][0], "answers": on_totals[arm][1],
+                     "accuracy": on_totals[arm][0] / on_totals[arm][1] if on_totals[arm][1] else None}
+               for arm in answers},
+            "difference": (on_totals["new"][0] / on_totals["new"][1] - on_totals["old"][0] / on_totals["old"][1]
+                           if on_totals["old"][1] and on_totals["new"][1] else None),
+            "ci95": paired_interval(on_pairs["old"], on_pairs["new"])}
         if any("slice" in rows[i] for i in gold_indices):
             memberships = [rows[i].get("slice", "(unsliced)") for i in gold_indices]
             gold_result["primary_min_p"] = graded_test(correct["old"], correct["new"], memberships)
@@ -422,6 +484,33 @@ def analyze(manifest, rows, calls, show_text=False):
         group["policies"] = {policy: (UNRECORDED_POLICY.copy() if policy in unrecorded_policy[arm]
                                       else finish_counts(subset)) for policy, subset in group["policies"].items()}
         summary[arm]["self_correction_outcomes"] = None if recovery[arm]["unrecorded"] else group
+    # Where the hazards are: how many scheduled calls hold the off-list and missing answers.
+    concentration = {}
+    for arm in answers:
+        arm_rows = [h for h in hazards if h["arm"] == arm]
+        entry = {"calls": len(arm_rows), "answers": sum(h["n_items"] for h in arm_rows)}
+        for key, name in (("off_list", "off_list"), ("parse_failures", "missing")):
+            hit = [h for h in arm_rows if h[key]]
+            entry[name] = sum(h[key] for h in hit)
+            entry[name + "_calls"] = len(hit)
+            entry[name + "_whole_calls"] = sum(h[key] == h["n_items"] for h in hit)
+            entry[name + "_max"] = max((h[key] for h in hit), default=0)
+            entry[name + "_max_of"] = max((h["n_items"] for h in hit if h[key] == entry[name + "_max"]), default=0)
+        entry["hazard_calls"] = sum(bool(h["off_list"] or h["parse_failures"]) for h in arm_rows)
+        concentration[arm] = entry
+    # Off-list answers are model output, so their text is local-only, like inputs (--show-text).
+    examples = None
+    if show_text and labels:
+        examples = {}
+        for arm in answers:
+            if arm == "old" and archived_old is not None:
+                examples[arm] = None
+                continue
+            found = Counter(normalize(p["answer"], labels) for c in calls if c["arm"] == arm and not c.get("archived")
+                            for p in c["predictions"] if p["answer"] is not None
+                            and normalize(p["answer"], labels) not in labels)
+            examples[arm] = [{"answer": shorten(answer), "count": count, "closest": closest_label(answer, labels)}
+                             for answer, count in sorted(found.items(), key=lambda pair: (-pair[1], pair[0]))[:3]]
     policy_result = {"retries": manifest.get("retries"), "applicable": list(applicable),
                      "labels": {policy: POLICY_LABELS[policy] for policy in applicable},
                      "not_applicable": ({} if len(applicable) > 2 else
@@ -442,7 +531,8 @@ def analyze(manifest, rows, calls, show_text=False):
             "served_models": served, "n_items": n, "draws": r, "batch": manifest["batch"],
             "labels": labels, "warnings": warnings, "hazard_summary": summary, "hazards": hazards,
             "draw_strip": strips, "self_disagreement_floor": floors, "gold": gold_result,
-            "parse_policies": policy_result,
+            "parse_policies": policy_result, "hazard_concentration": concentration,
+            **({"off_list_examples": examples} if examples is not None else {}),
             "unlabelled": {"n_items": len(changed_items), "items": changed_items, "permutations": PERMUTATIONS,
                            "seed": 0, "power": power,
                            "method": "total variation of both answer distributions, pooled 2R reallocation, inclusive +1 Monte Carlo p; BH over all unlabelled items"},
@@ -458,5 +548,6 @@ def analyze(manifest, rows, calls, show_text=False):
                             "Without gold, CHANGED means modal answers differ and BH-adjusted permutation p <= 0.05. It does not establish which model is better.",
                             "No-gold p uses total variation and 10,000 seed-0 pooled reallocations. Exact weighted enumeration is also shown when within the state budget. Mode ties use a deterministic lexical order, with missing answers first.",
                             "Self-disagreement includes failed answers as a distinct outcome; mean flip rate is the share off each item's own mode. Pairwise floor uses distinct draws.",
+                            "Intervals are 95% normal approximations clustered by input, pairing each input's old and new draws. Accuracy among on-list answers is descriptive: the inputs a model answers off-list drop out of its denominator, so the two models are scored on different subsets.",
                             "One pair at a time. Tool names use exact spelling and case." if tool_mode else
                             "One pair at a time. Classification-style answers work best. Free text is compared after whitespace and case normalization only."]}

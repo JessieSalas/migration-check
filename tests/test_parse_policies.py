@@ -83,9 +83,10 @@ class ParsePolicyTests(unittest.TestCase):
         self.assertEqual(policies["applicable"], ["strict", "strict_first_attempt", "last_object", "object_merge"])
         self.assertEqual(policies["retries"], 2)
         new, old = policies["arms"]["new"], policies["arms"]["old"]
-        self.assertEqual(new["strict"], {"calls": 2, "calls_parsed": 1, "answers": 12, "parsed": 6, "gold": 12,
-                                         "parsed_gold": 6, "correct": 5, "accuracy": 5 / 12,
-                                         "parsed_accuracy": 5 / 6, "available": True})
+        self.assertEqual(new["strict"], {"calls": 2, "calls_parsed": 1, "answers": 12, "parsed": 6, "on_list": 6,
+                                         "gold": 12, "parsed_gold": 6, "on_list_gold": 6, "correct": 5,
+                                         "accuracy": 5 / 12, "parsed_accuracy": 5 / 6, "on_list_accuracy": 5 / 6,
+                                         "available": True})
         # Strict accuracy is exactly the headline number; the parsed-only rate has its own denominator.
         self.assertEqual(new["strict"]["accuracy"], analysis["gold"]["new_accuracy"])
         self.assertEqual(old["strict"]["accuracy"], analysis["gold"]["old_accuracy"])
