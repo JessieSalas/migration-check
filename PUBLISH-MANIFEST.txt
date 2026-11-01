@@ -51,3 +51,4 @@ tests/test_sample.py
 tests/test_self_correction.py
 tests/test_tools.py
 tests/test_v02_fixes.py
+tests/test_user_agent.py

@@ -210,7 +210,10 @@ class OfflineTests(unittest.TestCase):
 
     def test_incomplete_call_counts_and_duplicate_rejection(self):
         directory, m, rows, calls = self.make_run(draws=2, batch=2)
-        data = analyze(m, rows, calls[:-1])
+        # Calls are written by parallel workers, so the file order of arms varies: drop the last NEW call
+        # explicitly (dropping calls[-1] made this test fail whenever an old-arm call happened to be last).
+        last_new = max(i for i, c in enumerate(calls) if c["arm"] == "new")
+        data = analyze(m, rows, calls[:last_new] + calls[last_new + 1:])
         self.assertEqual(data["hazard_summary"]["new"]["parse_failures"], 2)
         self.assertTrue(any("Incomplete run" in w for w in data["warnings"]))
         with (directory / "calls.jsonl").open("a") as stream:

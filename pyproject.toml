@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "migration-check"
-version = "0.4.1"
+version = "0.4.2"
 description = "Local repeat-draw model migration audits with no telemetry"
 readme = "README.md"
 requires-python = ">=3.9"

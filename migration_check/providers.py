@@ -113,9 +113,20 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
         return None
 
 
+# Some API hosts (Together AI among them, verified 1 Nov 2026) answer HTTP 403 to urllib's default
+# "Python-urllib/x.y" agent, so every request names this tool instead.
+def _user_agent():
+    from . import __version__
+    return f"migration-check/{__version__}"
+
+
+USER_AGENT = _user_agent()
+
+
 def post(url, payload, headers, timeout):
     request = urllib.request.Request(url, data=json.dumps(payload).encode("utf-8"),
-                                     headers={"Content-Type": "application/json", **headers}, method="POST")
+                                     headers={"Content-Type": "application/json", "User-Agent": USER_AGENT, **headers},
+                                     method="POST")
     try:
         with urllib.request.build_opener(NoRedirect).open(request, timeout=timeout) as response:
             body = response.read(MAX_RESPONSE_BYTES + 1)
