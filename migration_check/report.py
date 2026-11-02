@@ -222,9 +222,12 @@ def format_clause(entry, word, labelled):
 def decision_summary(data):
     """One neutral paragraph generated from the numbers, at the top of every decision export.
 
-    It claims "an output-format change, not a loss of task accuracy" only when new's accuracy
-    among on-list answers is at or above old's. When it is lower but the 95% interval of the difference
-    includes zero, it says no loss was detected and names the largest loss the interval does not rule out.
+    It never says "not a loss of task accuracy": on-list accuracy is a selected subset, because inputs a
+    model answers off-list leave its denominator. When new's on-list accuracy is at or above old's it says
+    the drop is mostly an output-format change and that no loss was detected among answers that follow the
+    format, quoting the difference and its interval. When it is lower but the 95% interval includes zero, it
+    also names the largest loss the interval does not rule out. When new's off-list answers sit in at most
+    half of its calls, it names those calls as the place to fix first.
     """
     spread = data.get("hazard_concentration")
     if not spread:
@@ -257,6 +260,11 @@ def decision_summary(data):
             continue
         clause = format_clause(entry, word, labelled)
         sentences.append((f"{arm.capitalize()}: {clause}" if old_hazards else clause[0].upper() + clause[1:]) + ".")
+        if arm == "new" and entry["off_list"] and 2 * entry["off_list_calls"] <= entry["calls"]:
+            # Concentrated: the off-list answers sit in at most half of the calls.
+            count = entry["off_list_calls"]
+            sentences.append(f"Fix first: the {count} call{'s' if count != 1 else ''} that "
+                             f"hold{'' if count != 1 else 's'} the {word} answers.")
     new_hazards = new["missing"] or new["off_list"]
     on_list = gold.get("on_list") if gold else None
     if on_list and new_hazards and on_list["new"]["accuracy"] is not None and on_list["old"]["accuracy"] is not None:
@@ -268,8 +276,11 @@ def decision_summary(data):
             text += f"; the 95% interval of the difference, {interval_text(interval)}, includes zero"
         text += ")"
         if held and gold["Dstar"] < 0 and on_list["difference"] >= 0:
-            text += (": the drop is an output-format change, not a loss of task accuracy on the answers that "
-                     "follow the format.")
+            measured = f"difference {100 * on_list['difference']:+.1f} points"
+            if interval is not None:
+                measured += f", 95% interval {interval_text(interval)}"
+            text += (". The drop is mostly an output-format change: among answers that follow the format, "
+                     f"no loss of task accuracy is detected ({measured}).")
         elif held and gold["Dstar"] < 0:
             text += (": the drop is mostly an output-format change; no loss of task accuracy on the answers that "
                      f"follow the format is detected, but a loss of up to {points(interval[0])} is not ruled out.")

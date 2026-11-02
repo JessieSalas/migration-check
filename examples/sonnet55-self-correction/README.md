@@ -1,5 +1,15 @@
 # Reproducer: Claude Sonnet 5.5 answers, writes "Wait", and answers again
 
+How common it is: in a preregistered prevalence study on 1 Nov 2026, Claude Sonnet 5.5 returned two or more JSON
+answer objects in 5 of 216 first-attempt calls (2.3%, Wilson 95% interval 1.0% to 5.3%; 3 of 108 batches), against 0
+of 216 for Claude Sonnet 4.5. Those calls used migration-check v0.4.1's default prompt at up to 20 messages per call on
+public data (Banking77, HWU64 and CLINC150) through the Claude Code CLI at its defaults. That is a rate on public
+benchmark data in one configuration, not a production rate.
+
+The six messages here are a searched trigger set, narrowed from a batch that failed repeatedly. The 17 of 20 below is
+the rate on that set, chosen because it fails, so use it to reproduce the behaviour, not to estimate how often it
+happens.
+
 Six public CLINC150 messages, one batched call, a JSON-only answer. At the Claude Code CLI's defaults (no extended
 thinking), Claude Sonnet 5.5 often writes a complete JSON answer, then "Wait", then a second JSON object that revises
 one message ("my list of reminders contains what"). A parser that expects one JSON object reads nothing from that reply.

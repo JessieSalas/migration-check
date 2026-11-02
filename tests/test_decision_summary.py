@@ -1,5 +1,8 @@
 """v0.4.4: accuracy among on-list answers, where the hazards are, and the generated decision summary.
 
+v0.4.6: the at-or-above branch no longer says "not a loss of task accuracy", and concentrated off-list
+answers get a "Fix first" sentence.
+
 Every run here is synthetic and offline: hand-written captures in the shape of a live run.
 """
 
@@ -12,7 +15,9 @@ from migration_check.report import build_report, concentration_text, decision_su
 
 GOLD = pp.GOLD
 OFF_LIST = [label.upper() for label in GOLD]  # A case change: parses, but no allowed label is spelled that way.
-FORMAT = "the drop is an output-format change, not a loss of task accuracy on the answers that follow the format"
+FORMAT = ("The drop is mostly an output-format change: among answers that follow the format, no loss of task "
+          "accuracy is detected")
+FIX_FIRST = "Fix first: the 1 call that holds the off-list answers."
 UNDETECTED = ("the drop is mostly an output-format change; no loss of task accuracy on the answers that follow the "
               "format is detected, but a loss of up to 49.3 points is not ruled out")
 AUTHORITATIVE = "Strict accuracy stays authoritative while the output contract is unchanged"
@@ -81,7 +86,8 @@ class DecisionSummaryTests(unittest.TestCase):
         build_report(directory, self.root / "format.html")
         record = (self.root / "format.decision.md").read_text()
         summary = ("New loses 58.3 points of strict accuracy on gold (old 100.0%, new 41.7%). All answers parse; "
-                   "6 of 12 use labels outside the allowed set, in 1 of 2 calls. Among on-list answers, accuracy "
+                   "6 of 12 use labels outside the allowed set, in 1 of 2 calls. " + FIX_FIRST + " Among on-list "
+                   "answers, accuracy "
                    "is 83.3% (old 100.0%; the 95% interval of the difference, -49.3 to +16.0 points, includes zero): " +
                    UNDETECTED + ". " + AUTHORITATIVE)
         lines = record.splitlines()
@@ -99,8 +105,21 @@ class DecisionSummaryTests(unittest.TestCase):
         # New draw 0 entirely off-list, draw 1 all correct: on-list accuracy 100% against old 100%.
         directory = self.off_list_run(list(GOLD), name="held")
         summary = decision_summary(analyze(*load_run(directory)))
-        self.assertIn("Among on-list answers, accuracy is 100.0% (old 100.0%): " + FORMAT + ".", summary)
+        self.assertIn("in 1 of 2 calls. " + FIX_FIRST + " Among on-list answers, accuracy is 100.0% (old 100.0%). "
+                      + FORMAT + " (difference +0.0 points, 95% interval +0.0 to +0.0 points).", summary)
         self.assertNotIn("not ruled out", summary)
+        self.assertNotIn("not a loss of task accuracy", summary)
+
+    def test_fix_first_names_the_calls_only_when_off_list_answers_are_concentrated(self):
+        # One off-list answer in each of the 2 calls: spread across every call, so no single place to fix first.
+        partial = list(GOLD)
+        partial[2] = "MPG"
+        directory = self.write_run([[clean(partial)], [clean(partial)]], name="spread")
+        summary = decision_summary(analyze(*load_run(directory)))
+        self.assertIn("in 2 of 2 calls.", summary)
+        self.assertNotIn("Fix first", summary)
+        # Missing answers alone are not off-list answers and get no "Fix first" sentence.
+        self.assertNotIn("Fix first", decision_summary(analyze(*load_run(self.demo_like(gold=True)))))
 
     def test_summary_says_both_changed_when_on_list_accuracy_drops_beyond_the_interval(self):
         directory = self.off_list_run(GOLD[:3] + ["todo_list"] * 3, name="both")
